@@ -15,11 +15,14 @@ void SysTick_Init_interrupt (void);                       //Initialize SysTick w
 void ADC14_init (void);
 int _delay_ms(uint16_t ms);
 void TEMP_Pin_Init (void);
+void convert_Time (void);
 
 static volatile uint16_t result;
 float ADC, V_REF, TEMPC, TEMPF;
 
 char TempC[5],TemPF[5];
+
+int Time=0;
 
 
 void main(void)
@@ -28,7 +31,16 @@ void main(void)
 	ADC14_init ( );                                   //Initialize 14bit ADC
   	Pin_Init( );                                      //intitialize pins
     	SysTick_Init_interrupt ( );                       //Initialize SysTick with interrupt
-   	__enable_irq ( );                                 //Enable global interrupts
+   	                               
+	
+	TIMER32_2->CONTROL = 0b111000110;			//Sets timer 2 for Enabled, 
+						//Periodic
+						//With Interrupt
+						//No Prescaler, 32 bit mode
+						//Wrapping mode
+      NVIC_EnableIRQ( T32_INT2_IRQn );          //Enable Timer32_2 interrupt.  
+   __enable_interrupt ( );                        	//Enable all interrupts for MSP432
+
   
 	while (1)
 	{
@@ -90,5 +102,40 @@ void convertVal(void)//converts the number to a string
 	TemPC[2] = '.';
 	TemPC[3] = ((t_C/10)%10)+48;
 	TemPC[4] = (t_C%10)+48;
+}
+
+void T32_INT2_IRQHandler ( )                         	 //Interrupt Handler for Timer 2. 
+{
+    TIMER32_2->INTCLR = 1;                          	//Clear interrupt flag so it does not interrupt again immediately 
+	Time++;
+    TIMER32_2->LOAD = 3000000 ;                 //Set to a countdown of 1 second on 3 MHz clock
+	
+}
+
+void convert_Time (void)
+{
+	//24 hours will include 86,400 incrementations of the variable "Time"
+	//12 hours will include 43,200 incrementations of the clock.
+	//These numbers will be used to distinguish A.M. vs P.M.
+	
+	if (Time < 43200) //A.M.
+	{
+		hour = (Time/3600);
+		min = (Time - (hour*3600) )/ 60;
+		sec = Time - (hour*3600) - (min*60);
+		
+	if ( hour == 0)
+        {
+            hour = 12;
+        }
+	}
+		else if (Time >= 43200)  //P.M.
+	{
+		hour = (Time/3600);
+		min = (Time - (hour*3600) )/ 60;
+		sec = Time - (hour*3600) - (min*60);
+
+		hour = hour - 12;
+	}
 }
 
