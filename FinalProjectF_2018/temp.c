@@ -31,3 +31,17 @@
         ADC14 -> CTL0 |= ADC14_CTL0_ENC;//enable conversion
     }
 
+    float getTemp(int degree)
+    {
+        uint32_t adc_input;
+        float TEMP, V_in;
+        ADC14 -> CTL0 |= ADC14_CTL0_SC; //starts conversion
+        adc_input = ADC14->MEM[0];
+        V_in = ((V_REF * ((adc_input)))/pow(2,14));
+        TEMP = ((V_in*1000))/10;//converts to celsius
+        if(degree == 1)
+                        {
+                        TEMP = (TEMP *(9.0/5.0))+32.0;
+                        }
+        return TEMP;
+    }

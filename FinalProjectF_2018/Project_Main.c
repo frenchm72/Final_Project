@@ -19,28 +19,27 @@
 
 void convert_Time (void);
 
-int Time=0;
-
-uint32_t adc_input;
-float V_REF = 3.3, V_in;
-int hour , min , sec;
+int hour , min , sec, Time=0, degreeFlag = 0;
+char TempS[7];
 
 void main(void)
 {
+    float temp; //theres probaly an warning here but we havent used temp yet so dont worry about it
+
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;		// stop watchdog timer
-	SysTick_Init();
+
+	SysTick_Init();                                 //all initializations
 	initPins();
 	ADC14init();
 	initLCD();
 	
-	TIMER32_2->CONTROL = 0b111000110;			//Sets timer 2 for Enabled, 
-						//Periodic
-						//With Interrupt
-						//No Prescaler, 32 bit mode
-						//Wrapping mode
+	TIMER32_2->CONTROL = 0b111000110;			//Sets timer 2 for Enabled, Periodic, With Interrupt, No Prescaler, 32 bit mode, Wrapping mode
       NVIC_EnableIRQ( T32_INT2_IRQn );          //Enable Timer32_2 interrupt.
-      NVIC -> ISER[0] |= 1 << ADC14_IRQn;//adc temp
+      NVIC -> ISER[0] |= 1 << ADC14_IRQn;       //adc temp interrupt
    __enable_interrupt ( );                        	//Enable all interrupts for MSP432
+
+   temp = getTemp(degreeFlag); //this is to get the tempature and if the degree flag is 1 it'll be in farhrenheit and if its zero it'll be in celsius
+   convertTemp(temp);//this is how you would convert the temp to a string called TempS so we can them print to the screen
 
 	while (1)
 	{
@@ -56,11 +55,11 @@ void T32_INT2_IRQHandler ( )                         	 //Interrupt Handler for T
 	
 }
 
-void convert_Time (void)
+void convert_Time (void)//************************************************************still needs fixed to restart at 24 hours
 {
 	//24 hours will include 86,400 incrementations of the variable "Time"
 	//12 hours will include 43,200 incrementations of the clock.
-	//These numbers will be used to distinguish A.M. vs P.M.
+	//These numbers will be used to distinguish A.M. vs. P.M.
 	
 	if (Time < 43200) //A.M.
 	{
@@ -83,21 +82,22 @@ void convert_Time (void)
 	}
 }
 
-/*void convertVal(void)//converts the number to a string
+void convertTemp(float TEMP)//converts the number to a string
 {
-    int v, t;
-    v = V_in * 1000;
+    int t;
     t = TEMP * 100;
 
-    V_IN[0] = (v/1000)+48;
-    V_IN[1] = '.';
-    V_IN[2] = ((v/100)%10)+48;
-    V_IN[3] = ((v/10)%10)+48;
-    V_IN[4] = (v%10)+48;
-
-    TemP[0] = (t/1000)+48;
-    TemP[1] = ((t/100)%10)+48;
-    TemP[2] = '.';
-    TemP[3] = ((t/10)%10)+48;
-    TemP[4] = (t%10)+48;
-}*/
+    TempS[0] = (t/1000)+48;
+    TempS[1] = ((t/100)%10)+48;
+    TempS[2] = '.';
+    TempS[3] = ((t/10)%10)+48;
+    TempS[4] = (t%10)+48;
+    if(degreeFlag == 1)
+    {
+        TempS[5] = 'F';
+    }
+    else
+    {
+        TempS[5] = 'C';
+    }
+}

@@ -5,7 +5,9 @@
 #define ADC_PIN BIT5
 #define ADC_INST 0
 
-void convertVal(void);
+#define V_REF 3.3
+float getTemp(int degree);
+void convertTemp(float TEMP);
 void ADC14init(void);
 
 #endif
