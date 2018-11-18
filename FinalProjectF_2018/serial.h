@@ -1,13 +1,11 @@
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
 
-char terminal[100];//to print invalid or valid
-int validFlag = 0;//to set a flag if its invalid or valid
+//char terminal[100];//to print invalid or valid
+//int validFlag = 0;//to set a flag if its invalid or valid
 
 #define BUFFER_SIZE 100
 char INPUT_BUFFER[BUFFER_SIZE];
-uint8_t storage_location = 0; //store location
-uint8_t read_location = 0; // read in varible
 
 void writeOutput(char *string); // write output characters to the serial port
 void readInput(char* string); // read input characters from INPUT_BUFFER that are valid

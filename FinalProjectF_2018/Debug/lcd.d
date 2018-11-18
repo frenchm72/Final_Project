@@ -17,6 +17,7 @@ lcd.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 lcd.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 lcd.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/system_msp432p401r.h
 lcd.obj: ../LCD.h
+lcd.obj: ../promain.h
 lcd.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h
 lcd.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h
 lcd.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h
@@ -44,6 +45,7 @@ C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_compiler.h:
 C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_ccs.h: 
 C:/ti/ccs810/ccsv8/ccs_base/arm/include/system_msp432p401r.h: 
 ../LCD.h: 
+../promain.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h: 

@@ -9,25 +9,11 @@
 #define RS_PORT P4
 #define RS_PIN BIT1
 
-#define ADC_PORT P5
-#define ADC_PIN BIT5
-#define ADC_INST 0
-
-#define BUTTON_PORT P1
-#define BUTTON_PIN BIT5
-#define BUTTON_IN   PORT1_IRQHandler    //port handler
-
-void initPins(void);
 void initLCD(void);
-void delay_micro(unsigned mic);
-void delay_ms(unsigned ms);
 void PulsEnablePin(void);
 void pushNib(uint8_t nib);
 void pushByt(uint8_t byte);
 void comWrit(uint8_t com);
 void dataWrit(uint8_t data);
-void SysTick_Init(void);
-void convertVal(void);
-void ADC14init(void);
 
 #endif

@@ -12,42 +12,54 @@ C_SRCS += \
 ../Project_Main.c \
 ../Serial.c \
 ../lcd.c \
+../promain.c \
 ../startup_msp432p401r_ccs.c \
-../system_msp432p401r.c 
+../system_msp432p401r.c \
+../temp.c 
 
 C_DEPS += \
 ./Project_Main.d \
 ./Serial.d \
 ./lcd.d \
+./promain.d \
 ./startup_msp432p401r_ccs.d \
-./system_msp432p401r.d 
+./system_msp432p401r.d \
+./temp.d 
 
 OBJS += \
 ./Project_Main.obj \
 ./Serial.obj \
 ./lcd.obj \
+./promain.obj \
 ./startup_msp432p401r_ccs.obj \
-./system_msp432p401r.obj 
+./system_msp432p401r.obj \
+./temp.obj 
 
 OBJS__QUOTED += \
 "Project_Main.obj" \
 "Serial.obj" \
 "lcd.obj" \
+"promain.obj" \
 "startup_msp432p401r_ccs.obj" \
-"system_msp432p401r.obj" 
+"system_msp432p401r.obj" \
+"temp.obj" 
 
 C_DEPS__QUOTED += \
 "Project_Main.d" \
 "Serial.d" \
 "lcd.d" \
+"promain.d" \
 "startup_msp432p401r_ccs.d" \
-"system_msp432p401r.d" 
+"system_msp432p401r.d" \
+"temp.d" 
 
 C_SRCS__QUOTED += \
 "../Project_Main.c" \
 "../Serial.c" \
 "../lcd.c" \
+"../promain.c" \
 "../startup_msp432p401r_ccs.c" \
-"../system_msp432p401r.c" 
+"../system_msp432p401r.c" \
+"../temp.c" 
 
 
