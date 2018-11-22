@@ -1,7 +1,7 @@
 /****************************************************************************
   Title:       EGR 226 Lab 7
   Filename:    Lab_7_Lab_Part_
-  Author(s):   Mathew Yerian-French
+  Author(s):   Mathew Yerian-French & Malcolm Macdonald
   Date:        11/11/2018
   Instructor:  Professor Scott Zuidema
   Description:
@@ -19,7 +19,13 @@
 
 void convert_Time (void);
 
+enum states
+{
+  SET_ALARM, DISPLAY_TIME
+}state;
+
 int hour , min , sec, Time=0, degreeFlag = 0;
+int alarm_hour = 12, alarm_min = 0;  //default alarm setting
 char TempS[7];
 
 void main(void)
@@ -43,6 +49,22 @@ void main(void)
 
 	while (1)
 	{
+	    case DISPLAY_TIME:  //code used to display time on LCD will be placed here
+	    {
+
+	        break;
+	    }
+	    case SET_ALARM:
+	    {
+	      if (BUTTON_HOUR_PORT -> IN & BUTTON_HOUR_PIN)
+	      {
+	          alarm_hour = alarm_hour + 1;
+	      }
+	      if (BUTTON_MIN_PORT -> IN & BUTTON_MIN_PIN)
+	      {
+	          alarm_min = alarm_min + 1;
+	      }
+	    }
 	}
 
 }
@@ -55,7 +77,7 @@ void T32_INT2_IRQHandler ( )                         	 //Interrupt Handler for T
 	
 }
 
-void convert_Time (void)//************************************************************still needs fixed to restart at 24 hours
+void convert_Time (void)//************************************************************still needs fixed to restart at 24 hours//fixed
 {
 	//24 hours will include 86,400 incrementations of the variable "Time"
 	//12 hours will include 43,200 incrementations of the clock.
@@ -72,7 +94,7 @@ void convert_Time (void)//******************************************************
             hour = 12;
         }
 	}
-		else if (Time >= 43200)  //P.M.
+		else if (Time >= 43200 && Time < 86400 )  //P.M.
 	{
 		hour = (Time/3600);
 		min = (Time - (hour*3600) )/ 60;
@@ -80,6 +102,12 @@ void convert_Time (void)//******************************************************
 
 		hour = hour - 12;
 	}
+
+	                            //resets time back to zero after 24 hours elapses
+		else if (Time >= 86400)
+		{
+		    Time = 0;
+		}
 }
 
 void convertTemp(float TEMP)//converts the number to a string
@@ -100,4 +128,18 @@ void convertTemp(float TEMP)//converts the number to a string
     {
         TempS[5] = 'C';
     }
+}
+void BUTTON_IN(void)         //for interrupt sending program to set alarm state //button port interrupt
+                                        //these pins and ports still need to be defined
+{
+    ALARM_BUTTON_PORT -> IFG & ALARM_BUTTON_PIN;                                                                                                //turns flag to 1
+    if(ALARM_BUTTON_PORT -> IN & ALARM_BUTTON_PIN)                                                                                 //if the button was pressed and emerg flag isn't 1
+    {
+        delay_ms(250);                                                                                                              //delay for debounce
+        while(!(ALARM_BUTTON_PORT -> IN & ALARM_BUTTON_PIN)){}                                                                                  //if button is being held
+                                                                                                                 //set emerg flag to 1
+        state = SET_ALARM;                                                                                                          //changes state
+    }                                                                                             //sleep variable to zero because something has been done
+
+    ALARM_BUTTON_PORT -> IFG &= ~ALARM_BUTTON_PIN;                                                                                              //turns flag to 0
 }
