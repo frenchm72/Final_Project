@@ -24,7 +24,7 @@ enum states
   SET_ALARM, DISPLAY_TIME
 }state;
 
-int hour , min , sec, Time=0, degreeFlag = 0;
+int hour , min , sec, Time=0, degreeFlag = 0, alarm_flag = 0;
 int alarm_hour = 12, alarm_min = 0;  //default alarm setting
 char TempS[7];
 
@@ -137,9 +137,18 @@ void BUTTON_IN(void)         //for interrupt sending program to set alarm state 
     {
         delay_ms(250);                                                                                                              //delay for debounce
         while(!(ALARM_BUTTON_PORT -> IN & ALARM_BUTTON_PIN)){}                                                                                  //if button is being held
-                                                                                                                 //set emerg flag to 1
-        state = SET_ALARM;                                                                                                          //changes state
-    }                                                                                             //sleep variable to zero because something has been done
+
+        if (alarm_flag == 0)
+        {
+            state = SET_ALARM;
+            alarm_flag = 1);
+        }
+        else if (alarm_flag == 1)
+        {
+            state = DISPLAY_TIME;       //interrupt allows states to be changed
+            alarm_flag = 0;
+        }
+    }
 
     ALARM_BUTTON_PORT -> IFG &= ~ALARM_BUTTON_PIN;                                                                                              //turns flag to 0
 }
