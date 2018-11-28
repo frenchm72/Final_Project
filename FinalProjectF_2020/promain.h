@@ -16,6 +16,13 @@
 #define SET_PORT P1
 #define SET_PIN BIT5
 
+#define MINSEC_PORT P1
+#define MINSEC_PIN BIT4
+
+#define WAKE_PORT P2
+#define WAKE_PIN BIT4
+#define WAKE_INST 1
+
 #define MAXBRIGHT 7499
 
 #define DEBOUN 100

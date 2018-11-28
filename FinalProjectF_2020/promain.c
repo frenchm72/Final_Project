@@ -34,6 +34,11 @@ void initPins(void)
     DATA_PORT->DIR |= DATA_PIN;
     DATA_PORT->OUT |= DATA_PIN;
 
+    WAKE_PORT->SEL0 |= (WAKE_PIN); //GPIO LED
+    WAKE_PORT->SEL1 &= ~(WAKE_PIN);
+    WAKE_PORT->DIR  |=  (WAKE_PIN);
+    WAKE_PORT->OUT |= WAKE_PIN;
+
     /*  SEC_PORT -> SEL0 &= ~ONOFFUP_PIN;
     ONOFFUP_PORT -> SEL1 &= ~ONOFFUP_PIN;
     ONOFFUP_PORT -> DIR  |=  ONOFFUP_PIN;
@@ -89,6 +94,26 @@ void initPins(void)
     SETALARM_PORT -> IES  |=  SETALARM_PIN;
     SETALARM_PORT -> IE   |=  SETALARM_PIN;
     SETALARM_PORT -> IFG  = 0;
+
+    /*  MINSEC_PORT -> SEL0 &= ~MINSEC_PIN;
+    MINSEC_PORT -> SEL1 &= ~MINSEC_PIN;
+    MINSEC_PORT -> DIR  |=  MINSEC_PIN;
+    MINSEC_PORT -> REN  |=  MINSEC_PIN;
+    MINSEC_PORT -> OUT  |=  MINSEC_PIN;*/
+    MINSEC_PORT -> SEL0 &= ~MINSEC_PIN;
+    MINSEC_PORT -> SEL1 &= ~MINSEC_PIN;
+    MINSEC_PORT -> DIR  &= ~MINSEC_PIN;
+    MINSEC_PORT -> REN  |=  MINSEC_PIN;
+    MINSEC_PORT -> OUT  |=  MINSEC_PIN;
+    MINSEC_PORT -> IES  |=  MINSEC_PIN;
+    MINSEC_PORT -> IE   |=  MINSEC_PIN;
+    MINSEC_PORT -> IFG  = 0;
+
+    TIMER_A0 -> CCR[0] = MAXBRIGHT;//sets up timer a0
+    TIMER_A0 -> CCR[WAKE_INST] = 0;
+    TIMER_A0 -> CCTL[WAKE_INST] = TIMER_A_CCTLN_OUTMOD_7;
+    TIMER_A0 -> CTL = TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC_0
+                    | TIMER_A_CTL_MC__UP | TIMER_A_CTL_CLR;
 }
 
 
@@ -116,6 +141,6 @@ void configRTC(void)
 {
     RTC_C -> CTL0 = 0xA510;
     RTC_C -> CTL13 = 0x0000;
-    RTC_C -> TIM0 = 00<<8 | 00;
-    RTC_C -> TIM1 = 00<<8 | 1;
+    RTC_C -> TIM0 = 59<<8 | 55;
+    RTC_C -> TIM1 = 5<<8 | 00;
 }

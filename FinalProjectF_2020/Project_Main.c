@@ -32,10 +32,11 @@ int AmPmFlag = 0,
     blinkFlag = 0,
     alarmGoFlag = 0,
     snoozFlag = 0,
+    MinSecFlag = 0,
     counter = 0,
     i = 0;              //flags to let the main know something happend
 
-float bright;
+float bright, MaxBright = 7499.00;
 
 enum states
 {
@@ -47,9 +48,9 @@ enum states
 
 struct
 {
-    int8_t sec;
-    int8_t min;
-    int8_t hour;
+    uint8_t sec;
+    uint8_t min;
+    uint8_t hour;
 }now;
 
 struct
@@ -77,8 +78,8 @@ void main(void)
 {
     float temp;
 
-    //alarm.min = 5;
-    //alarm.hour = 1;
+    alarm.min = 5;
+    alarm.hour = 1;
 
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;		// stop watchdog timer
 	__disable_irq();
@@ -359,7 +360,7 @@ void main(void)
         default:
             state = NORMAL_CLOCK;
             break;
-	    }
+	    }//end of switch
 	    RTCFlag = 0;//this is here for now but will have to go in the switch statements incase the alarm goes off we want this to stay at 1 until the button is pressed
 	    if((alarmFlag == 1) && ((alarm.min - now.min)<=5) && (alarm.hour == now.hour) && ((alarm.min - now.min)>0))
 	    {
@@ -367,7 +368,9 @@ void main(void)
 	        if(counter==3)
 	        {
 	            counter = 0;
-	            //bright = bright + (MAXBRIGHT * .05);// <--- set this equal to duty cycle add 5% brigntness to led for 5 mins before alarm for every 3 seconds
+	            bright = bright + (MaxBright * .005);
+	            TIMER_A0 -> CCR[WAKE_INST] = bright;
+	            // <--- set this equal to duty cycle add 5% brigntness to led for 5 mins before alarm for every 3 seconds
 	        }
 	    }
 	    if((alarm.hour == now.hour) && (alarm.min == now.min) && (alarmFlag == 1))
@@ -380,10 +383,14 @@ void main(void)
 	        //sets off alarm again
 	        snoozFlag = 0;
 	    }
-	}
-	}
+	    if(MinSecFlag)
+	        {
+	            RTC_C -> TIM0 = (now.sec)<<8 | now.sec;
+	        }
+	        }//End of if second statement
+	}//end of while loop
 
-}
+}//end of main
 void displayTime(void)
 {
     for(i=0;i<TIMESTR;i++)
@@ -420,15 +427,11 @@ if((now.hour >= 10) && (now.hour <= 12))
     timeDisp[1] = (now.hour%10)+48;
     AmPmFlag = 1;
 }
-if((now.hour > 21)&&(now.hour <= 24))
+if((now.hour > 21)&&(now.hour < 24))
 {
     timeDisp[0] = (((now.hour-12)/10)%10)+48;
     timeDisp[1] = ((now.hour-12)%10)+48;
     AmPmFlag = 1;
-}
-if(now.hour == 24)
-{
-    AmPmFlag = 0;
 }
 if((now.hour > 12)&&(now.hour<22))
 {
@@ -508,6 +511,20 @@ void BUTTON_IN(void)                                                            
     SDOWN_PORT -> IFG & SDOWN_PIN;
     SET_PORT -> IFG & SET_PIN;
     SETALARM_PORT -> IFG & SETALARM_PIN;
+    MINSEC_PORT -> IFG & MINSEC_PIN;
+
+    if(!(MINSEC_PORT -> IN & MINSEC_PIN) && (MinSecFlag == 0))
+    {
+        delay_ms(DEBOUN);                                                                                                              //delay for debounce
+        while(!(MINSEC_PORT -> IN & MINSEC_PIN)){}
+        MinSecFlag = 1;
+    }
+    if(!(MINSEC_PORT -> IN & MINSEC_PIN) && (MinSecFlag == 1))
+        {
+            delay_ms(DEBOUN);                                                                                                              //delay for debounce
+            while(!(MINSEC_PORT -> IN & MINSEC_PIN)){}
+            MinSecFlag = 0;
+        }
 
    if((setTimeFlag == 1) && (setAlarmFlag == 0))
         {
@@ -515,13 +532,11 @@ void BUTTON_IN(void)                                                            
        {
            delay_ms(DEBOUN);                                                                                                              //delay for debounce
            while(!(SDOWN_PORT -> IN & SDOWN_PIN)){}                                                                                  //if button is being held
-           if(set.hour == 0)
+           if(set.hour >= 0)
            set.hour--;
-           if(set.hour > 0)
-           set.hour--;
-           if(set.hour <= 0)
+           if(set.hour < 0)
            {
-             set.hour = 24;
+             set.hour = 23;
            }
 
        }
@@ -529,25 +544,25 @@ void BUTTON_IN(void)                                                            
        {
            delay_ms(DEBOUN);                                                                                                              //delay for debounce
            while(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)){}                                                                                  //if button is being held
-           if(set.hour<=24)
+           if(set.hour<24)
            set.hour++;
-           if(set.hour == 25)
+           if(set.hour == 24)
                       {
-                          set.hour = 1;
+                          set.hour = 0;
                       }
        }
        if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == TIME_SET_MIN))
        {
            delay_ms(DEBOUN);                                                                                                              //delay for debounce
            while(!(SDOWN_PORT -> IN & SDOWN_PIN)){}                                                                                  //if button is being held
-           if(set.min > 0)
+           if(set.min >= 0)
            set.min--;
-           if(set.min == 0)
+           if(set.min < 0)
            {
                set.hour--;
                if(set.hour <= 0)
                {
-                   set.hour = 24;
+                   set.hour = 23;
                }
                set.min = 59;
            }
@@ -556,14 +571,14 @@ void BUTTON_IN(void)                                                            
        {
            delay_ms(DEBOUN);                                                                                                              //delay for debounce
            while(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)){}                                                                                  //if button is being held
-           if(set.min < 60)
+           if(set.min <= 60)
            set.min++;
-           if(set.min == 60)
+           if(set.min >= 60)
            {
                set.hour++;
-               if(set.hour == 25)
+               if(set.hour == 24)
                {
-                   set.hour = 1;
+                   set.hour = 0;
                }
                set.min = 0;
            }
@@ -583,7 +598,7 @@ void BUTTON_IN(void)                                                            
                               set.hour--;
                               if(set.hour <= 0)
                               {
-                                  set.hour = 24;
+                                  set.hour = 23;
                               }
                           }
                           set.sec = 59;
@@ -602,9 +617,9 @@ void BUTTON_IN(void)                                                            
                           {
                               set.min = 0;
                               set.hour++;
-                              if(set.hour == 25)
+                              if(set.hour == 24)
                               {
-                                  set.hour = 1;
+                                  set.hour = 0;
                               }
                           }
                           set.sec = 0;
@@ -670,6 +685,7 @@ void BUTTON_IN(void)                                                            
             counter = 0;
             alarmGoFlag = 0;
             bright = 0;//*********************************************************************set the led to 0 brightness
+            TIMER_A0 -> CCR[WAKE_INST] = bright;
         }
     }
 
@@ -680,13 +696,11 @@ void BUTTON_IN(void)                                                            
           {
               delay_ms(DEBOUN);                                                                                                              //delay for debounce
               while(!(SDOWN_PORT -> IN & SDOWN_PIN)){}                                                                                  //if button is being held
-              if(alarm.hour == 0)
+              if(alarm.hour >= 0)
                   alarm.hour--;
-              if(alarm.hour > 0)
-                  alarm.hour--;
-              if(alarm.hour <= 0)
+              if(alarm.hour < 0)
               {
-                  alarm.hour = 24;
+                  alarm.hour = 23;
               }
 
           }
@@ -694,25 +708,25 @@ void BUTTON_IN(void)                                                            
           {
               delay_ms(25);                                                                                                              //delay for debounce
               while(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)){}                                                                                  //if button is being held
-              if(alarm.hour<=24)
+              if(alarm.hour<24)
                   alarm.hour++;
-              if(alarm.hour == 25)
+              if(alarm.hour == 24)
                          {
-                  alarm.hour = 1;
+                  alarm.hour = 0;
                          }
           }
           if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == ALARM_MIN))
           {
               delay_ms(25);                                                                                                              //delay for debounce
               while(!(SDOWN_PORT -> IN & SDOWN_PIN)){}                                                                                  //if button is being held
-              if(alarm.min > 0)
+              if(alarm.min >= 0)
                   alarm.min--;
-              if(alarm.min == 0)
+              if(alarm.min < 0)
               {
                   alarm.hour--;
-                  if(alarm.hour <= 0)
+                  if(alarm.hour < 0)
                   {
-                      alarm.hour = 24;
+                      alarm.hour = 23;
                   }
                   alarm.min = 59;
               }
@@ -726,9 +740,9 @@ void BUTTON_IN(void)                                                            
               if(alarm.min == 60)
               {
                   alarm.hour++;
-                  if(alarm.hour == 25)
+                  if(alarm.hour == 24)
                   {
-                      alarm.hour = 1;
+                      alarm.hour = 0;
                   }
                   alarm.min = 0;
               }
@@ -814,6 +828,7 @@ void BUTTON_IN(void)                                                            
    SDOWN_PORT -> IFG &= ~SDOWN_PIN;
    ONOFFUP_PORT -> IFG &= ~ONOFFUP_PIN;
    SETALARM_PORT -> IFG &= ~SETALARM_PIN;//turns flag to 0
+   MINSEC_PORT -> IFG &= ~MINSEC_PIN;//turns flag to 0
 }
 void setRTC(void)
 {
@@ -839,24 +854,13 @@ void convertTimeSet (void)
     {
         timeDisp[0] = ((set.hour/10)%10)+48;
         timeDisp[1] = (set.hour%10)+48;
-        if(set.hour == 12)
-        {
         AmPmFlag = 1;
-        }
-        else
-        {
-            AmPmFlag = 0;
-        }
     }
-    if((set.hour > 21)&&(set.hour <= 24))
+    if((set.hour > 21)&&(set.hour < 24))
     {
         timeDisp[0] = (((set.hour-12)/10)%10)+48;
         timeDisp[1] = ((set.hour-12)%10)+48;
         AmPmFlag = 1;
-    }
-    if(set.hour == 24)
-    {
-        AmPmFlag = 0;
     }
     if((set.hour > 12)&&(set.hour<22))
     {
@@ -896,7 +900,6 @@ void convertTimeSet (void)
         timeDisp[9] = 'P';
         timeDisp[10] = 'M';
     }
-
 }
 
 void convertAlarmSet(void)
@@ -918,24 +921,13 @@ void convertAlarmSet(void)
     {
         timeDisp[0] = ((alarm.hour/10)%10)+48;
         timeDisp[1] = (alarm.hour%10)+48;
-        if(alarm.hour == 12)
-        {
         AmPmFlag = 1;
-        }
-        else
-        {
-            AmPmFlag = 0;
-        }
     }
-    if((alarm.hour > 21)&&(alarm.hour <= 24))
+    if((alarm.hour > 21)&&(alarm.hour < 24))
     {
         timeDisp[0] = (((alarm.hour-12)/10)%10)+48;
         timeDisp[1] = ((alarm.hour-12)%10)+48;
         AmPmFlag = 1;
-    }
-    if(alarm.hour == 24)
-    {
-        AmPmFlag = 0;
     }
     if((alarm.hour > 12)&&(alarm.hour<22))
     {
@@ -953,16 +945,17 @@ void convertAlarmSet(void)
         timeDisp[3] = ((alarm.min/10)%10)+48;
         timeDisp[4] = (alarm.min%10)+48;
     }
- /*   if(alarm.sec < 10)
+ /*   if(set.sec < 10)
     {
         timeDisp[6] = '0';
-        timeDisp[7] = (alarm.sec+48);
+        timeDisp[7] = (set.sec+48);
     }
-    if(alarm.sec >= 10)
+    if(set.sec >= 10)
     {
-        timeDisp[6] = ((alarm.sec/10)%10)+48;
-        timeDisp[7] = (alarm.sec%10)+48;
+        timeDisp[6] = ((set.sec/10)%10)+48;
+        timeDisp[7] = (set.sec%10)+48;
     }*/
+
     timeDisp[5] = ' ';
     timeDisp[6] = ' ';
     timeDisp[7] = ' ';
