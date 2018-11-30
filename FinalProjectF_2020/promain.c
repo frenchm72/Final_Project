@@ -12,6 +12,7 @@
 #include "serial.h"
 #include "temp.h"
 #include "promain.h"
+#include "speaker.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -23,6 +24,13 @@ void initPins(void)
     PULSE_PORT->SEL1 &= ~PULSE_PIN;
     PULSE_PORT->DIR |= PULSE_PIN;
     PULSE_PORT->OUT |= PULSE_PIN;
+
+    BEEP_PORT->SEL0 &= ~BEEP_PIN;                  //setting up beep pin
+    BEEP_PORT->SEL1 &= ~BEEP_PIN;
+    BEEP_PORT->DIR |= BEEP_PIN;
+    BEEP_PORT->OUT &=~ BEEP_PIN;
+
+
 
     RS_PORT->SEL0 &= ~RS_PIN;                  //setting up RS pin
     RS_PORT->SEL1 &= ~RS_PIN;
@@ -38,6 +46,11 @@ void initPins(void)
     WAKE_PORT->SEL1 &= ~(WAKE_PIN);
     WAKE_PORT->DIR  |=  (WAKE_PIN);
     WAKE_PORT->OUT |= WAKE_PIN;
+
+    BEEP_PORT->SEL0 |= (BEEP_PIN); //GPIO BEEP
+    BEEP_PORT->SEL1 &= ~(BEEP_PIN);
+    BEEP_PORT->DIR  |=  (BEEP_PIN);
+    BEEP_PORT->OUT &=~ BEEP_PIN;
 
     /*  BUTTON_PORT -> SEL0 &= ~BUTTON_PIN;
     BUTTON_PORT -> SEL1 &= ~BUTTON_PIN;
@@ -128,6 +141,14 @@ void initPins(void)
     TIMER_A0 -> CCTL[WAKE_INST] = TIMER_A_CCTLN_OUTMOD_7;
     TIMER_A0 -> CTL = TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC_0
                     | TIMER_A_CTL_MC__UP | TIMER_A_CTL_CLR;
+
+    TIMER_A1->CCR[0]    =    600+0x00000860>>2;
+    TIMER_A1->CCR[BEEP_INST]    =    TIMER_A0->CCR[0]>>1
+    TIMER_A1->CCTL[BEEP_INST]   =    0b11100000;                // Set to Reset/set Compare Mode (BITs 7-5 set to 1)
+    TIMER_A1->CTL       =    0b1000010100;              // Bits 9-8 = 10 to Set to SMCLK
+                                                        // Bits 5-4 = 01 to Set to Count Up Mode
+
+
 }
 
 

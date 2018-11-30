@@ -1,17 +1,18 @@
 /****************************************************************************
   Title:       EGR 226 Lab 7
   Filename:    Lab_7_Lab_Part_
-  Author(s):   Mathew Yerian-French
+  Author(s):   Mathew Yerian-French & Malcolm Macdonald
   Date:        11/11/2018
   Instructor:  Professor Scott Zuidema
   Description:
-  Note:         12g
+  Note:         12g start pin for LCD
 *****************************************************************************/
 #include "msp.h"
 #include "LCD.h"
 #include "serial.h"
 #include "temp.h"
 #include "promain.h"
+#include "speaker.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -374,12 +375,12 @@ void main(void)
 	    }
 	    if((alarm.hour == now.hour) && (alarm.min == now.min) && (alarmFlag == 1))
 	    {
-	        //set off alarm
+	        beep();
 	        alarmGoFlag = 1;
 	    }
 	    if((snooz.hour == now.hour) && (snooz.min == now.min) && (snoozFlag == 1))
 	    {
-	        //sets off alarm again
+	        beep();
 	        snoozFlag = 0;
 	    }
 	    if(MinSecFlag)
