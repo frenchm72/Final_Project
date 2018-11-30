@@ -19,15 +19,24 @@
     {
         ADC_PORT -> SEL0 |= ADC_PIN;//set adc conversion
         ADC_PORT -> SEL1 |= ADC_PIN;
-        ADC14 -> CTL0 &= ~ADC14_CTL0_ENC;//enable conersion
-        ADC14 -> CTL0 |= ADC14_CTL0_PDIV__32 |//setpdiv to 32
+        LCDADC_PORT -> SEL0 |= LCDADC_PIN;//set adc conversion
+        LCDADC_PORT -> SEL1 |= LCDADC_PIN;
+
+        ADC14 -> CTL0 &= ~ADC14_CTL0_ENC;//disable conersion
+
+       /* ADC14 -> CTL0 |= ADC14_CTL0_PDIV__32 |//setpdiv to 32
                          ADC14_CTL0_SHP |//hold off sampling timer
                          ADC14_CTL0_SSEL__SMCLK |//sub master clock
                          ADC14_CTL0_SHT1__32 |//hol regisert for 32 clock
-                         ADC14_CTL0_ON;//turns on
-        ADC14 -> CTL1 |= ADC14_CTL1_RES__14BIT;//10 but resolution
+                         ADC14_CTL0_ON;//turns on*/
+        ADC14->CTL0         =    0b10000100001000100000001110010000;
+
+        //ADC14 -> CTL1 |= ADC14_CTL1_RES__14BIT;//10 but resolution
+        ADC14->CTL1         =    BIT4|BIT5|BIT(23);         // Bits 5 and 4 = 11 to enable 14 bit conversion
+
         ADC14 -> MCTL[ADC_INST] = 0;//defult config for adc
-        ADC14 -> IER0;//interrupt on
+        ADC14 -> IER0 = 0;//interrupt on
+
         ADC14 -> CTL0 |= ADC14_CTL0_ENC;//enable conversion
     }
 

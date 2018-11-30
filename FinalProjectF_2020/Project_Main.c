@@ -5,7 +5,7 @@
   Date:        11/11/2018
   Instructor:  Professor Scott Zuidema
   Description:
-  Note:
+  Note:         12g
 *****************************************************************************/
 #include "msp.h"
 #include "LCD.h"
@@ -354,14 +354,13 @@ void main(void)
         /*case ALARM_SEC:
             break;*/
         case ALARM_GOING_OFF:
-
+//alarm goes here l
             break;
 
         default:
             state = NORMAL_CLOCK;
             break;
 	    }//end of switch
-	    RTCFlag = 0;//this is here for now but will have to go in the switch statements incase the alarm goes off we want this to stay at 1 until the button is pressed
 	    if((alarmFlag == 1) && ((alarm.min - now.min)<=5) && (alarm.hour == now.hour) && ((alarm.min - now.min)>0))
 	    {
 	        counter++;
@@ -385,8 +384,9 @@ void main(void)
 	    }
 	    if(MinSecFlag)
 	        {
-	            RTC_C -> TIM0 = (now.sec)<<8 | now.sec;
+	            RTC_C -> TIM0 = (now.sec)>>8;
 	        }
+	    RTCFlag = 0;//this is here
 	        }//End of if second statement
 	}//end of while loop
 
@@ -415,17 +415,23 @@ if(now.hour == 0)
     timeDisp[1] = '2';
     AmPmFlag = 0;
 }
+if((now.hour == 12))
+{
+    timeDisp[0] = ((now.hour/10)%10)+48;
+    timeDisp[1] = (now.hour%10)+48;
+    AmPmFlag = 1;
+}
 if((now.hour < 10) && (now.hour != 0))
 {
    timeDisp[0] = ' ';
    timeDisp[1] = (now.hour+48);
    AmPmFlag = 0;
 }
-if((now.hour >= 10) && (now.hour <= 12))
+if((now.hour >= 10) && (now.hour < 12))
 {
     timeDisp[0] = ((now.hour/10)%10)+48;
     timeDisp[1] = (now.hour%10)+48;
-    AmPmFlag = 1;
+    AmPmFlag = 0;
 }
 if((now.hour > 21)&&(now.hour < 24))
 {
@@ -512,6 +518,7 @@ void BUTTON_IN(void)                                                            
     SET_PORT -> IFG & SET_PIN;
     SETALARM_PORT -> IFG & SETALARM_PIN;
     MINSEC_PORT -> IFG & MINSEC_PIN;
+    BUTTON_PORT -> IFG & BUTTON_PIN;
 
     if(!(MINSEC_PORT -> IN & MINSEC_PIN) && (MinSecFlag == 0))
     {
@@ -685,6 +692,7 @@ void BUTTON_IN(void)                                                            
             counter = 0;
             alarmGoFlag = 0;
             bright = 0;//*********************************************************************set the led to 0 brightness
+            snoozFlag = 0;
             TIMER_A0 -> CCR[WAKE_INST] = bright;
         }
     }
@@ -824,11 +832,24 @@ void BUTTON_IN(void)                                                            
         //turn off alarm speaker
         snoozFlag = 1;
     }
+    if(!(BUTTON_PORT -> IN & BUTTON_PIN) && (degreeFlag == 0))
+        {
+            delay_ms(DEBOUN);                                                                                                              //delay for debounce
+            while(!(BUTTON_PORT -> IN & BUTTON_PIN)){}
+            degreeFlag = 1;
+        }
+        if(!(BUTTON_PORT -> IN & BUTTON_PIN) && (degreeFlag == 1))
+            {
+                delay_ms(DEBOUN);                                                                                                              //delay for debounce
+                while(!(BUTTON_PORT -> IN & BUTTON_PIN)){}
+                degreeFlag = 0;
+            }
    SET_PORT -> IFG &= ~SET_PIN;//turns flag to 0
    SDOWN_PORT -> IFG &= ~SDOWN_PIN;
    ONOFFUP_PORT -> IFG &= ~ONOFFUP_PIN;
    SETALARM_PORT -> IFG &= ~SETALARM_PIN;//turns flag to 0
    MINSEC_PORT -> IFG &= ~MINSEC_PIN;//turns flag to 0
+   BUTTON_PORT -> IFG &= ~BUTTON_PIN;//turns flag to 0
 }
 void setRTC(void)
 {
@@ -844,17 +865,23 @@ void convertTimeSet (void)
         timeDisp[1] = '2';
         AmPmFlag = 0;
     }
+    if((set.hour == 12))
+    {
+        timeDisp[0] = ((set.hour/10)%10)+48;
+        timeDisp[1] = (set.hour%10)+48;
+        AmPmFlag = 1;
+    }
     if((set.hour < 10) && (set.hour != 0))
     {
        timeDisp[0] = ' ';
        timeDisp[1] = (set.hour+48);
        AmPmFlag = 0;
     }
-    if((set.hour >= 10) && (set.hour <= 12))
+    if((set.hour >= 10) && (set.hour < 12))
     {
         timeDisp[0] = ((set.hour/10)%10)+48;
         timeDisp[1] = (set.hour%10)+48;
-        AmPmFlag = 1;
+        AmPmFlag = 0;
     }
     if((set.hour > 21)&&(set.hour < 24))
     {
@@ -911,17 +938,23 @@ void convertAlarmSet(void)
         timeDisp[1] = '2';
         AmPmFlag = 0;
     }
+    if((alarm.hour == 12))
+    {
+        timeDisp[0] = ((alarm.hour/10)%10)+48;
+        timeDisp[1] = (alarm.hour%10)+48;
+        AmPmFlag = 1;
+    }
     if((alarm.hour < 10) && (alarm.hour != 0))
     {
        timeDisp[0] = ' ';
        timeDisp[1] = (alarm.hour+48);
        AmPmFlag = 0;
     }
-    if((alarm.hour >= 10) && (alarm.hour <= 12))
+    if((alarm.hour >= 10) && (alarm.hour < 12))
     {
         timeDisp[0] = ((alarm.hour/10)%10)+48;
         timeDisp[1] = (alarm.hour%10)+48;
-        AmPmFlag = 1;
+        AmPmFlag = 0;
     }
     if((alarm.hour > 21)&&(alarm.hour < 24))
     {
