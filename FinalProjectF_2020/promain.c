@@ -12,6 +12,7 @@
 #include "serial.h"
 #include "temp.h"
 #include "promain.h"
+#include "speaker.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -34,10 +35,24 @@ void initPins(void)
     DATA_PORT->DIR |= DATA_PIN;
     DATA_PORT->OUT |= DATA_PIN;
 
+    SPEAKER_PORT->SEL0 |=   SPEAKER_PIN;                      // Configure P2.4 to TIMER_A0 PWM Control
+    SPEAKER_PORT->SEL1 &=  ~SPEAKER_PIN;                      // SEL = 01 sets to PWM Control
+    SPEAKER_PORT->DIR |=   SPEAKER_PIN;                      // Initialize speaker pin as an output
+
     WAKE_PORT->SEL0 |= (WAKE_PIN); //GPIO LED
     WAKE_PORT->SEL1 &= ~(WAKE_PIN);
     WAKE_PORT->DIR  |=  (WAKE_PIN);
     WAKE_PORT->OUT |= WAKE_PIN;
+
+    LCDBRIGHT_PORT->SEL0 |= (LCDBRIGHT_PIN); //GPIO LCD
+    LCDBRIGHT_PORT->SEL1 &= ~(LCDBRIGHT_PIN);
+    LCDBRIGHT_PORT->DIR  |=  (LCDBRIGHT_PIN);
+    LCDBRIGHT_PORT->OUT |= LCDBRIGHT_PIN;
+
+    BEEP_PORT->SEL0 &= ~(BEEP_PIN); //GPIO LCD
+    BEEP_PORT->SEL1 &= ~(BEEP_PIN);
+    BEEP_PORT->DIR  |=  (BEEP_PIN);
+    BEEP_PORT->OUT |= BEEP_PIN;
 
     /*  BUTTON_PORT -> SEL0 &= ~BUTTON_PIN;
     BUTTON_PORT -> SEL1 &= ~BUTTON_PIN;
@@ -126,8 +141,15 @@ void initPins(void)
     TIMER_A0 -> CCR[0] = MAXBRIGHT;//sets up timer a0
     TIMER_A0 -> CCR[WAKE_INST] = 0;
     TIMER_A0 -> CCTL[WAKE_INST] = TIMER_A_CCTLN_OUTMOD_7;
+    TIMER_A0 -> CCR[LCDBRIGHT_INST] = 0;
+    TIMER_A0 -> CCTL[LCDBRIGHT_INST] = TIMER_A_CCTLN_OUTMOD_7;
     TIMER_A0 -> CTL = TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC_0
                     | TIMER_A_CTL_MC__UP | TIMER_A_CTL_CLR;
+
+    TIMER_A2->CCR[0] = 600+0x00000860>>2;
+    TIMER_A2->CCR[BEEP_INST] = TIMER_A2->CCR[0]>>1;
+    TIMER_A2->CCTL[BEEP_INST] = 0b11100000;                // Set to Reset/set Compare Mode (BITs 7-5 set to 1)
+    TIMER_A2->CTL = 0b1000010100;              // Bits 9-8 = 10 to Set to SMCLK
 }
 
 

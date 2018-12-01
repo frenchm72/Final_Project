@@ -13,6 +13,7 @@ C_SRCS += \
 ../Serial.c \
 ../lcd.c \
 ../promain.c \
+../speaker.c \
 ../startup_msp432p401r_ccs.c \
 ../system_msp432p401r.c \
 ../temp.c 
@@ -22,6 +23,7 @@ C_DEPS += \
 ./Serial.d \
 ./lcd.d \
 ./promain.d \
+./speaker.d \
 ./startup_msp432p401r_ccs.d \
 ./system_msp432p401r.d \
 ./temp.d 
@@ -31,6 +33,7 @@ OBJS += \
 ./Serial.obj \
 ./lcd.obj \
 ./promain.obj \
+./speaker.obj \
 ./startup_msp432p401r_ccs.obj \
 ./system_msp432p401r.obj \
 ./temp.obj 
@@ -40,6 +43,7 @@ OBJS__QUOTED += \
 "Serial.obj" \
 "lcd.obj" \
 "promain.obj" \
+"speaker.obj" \
 "startup_msp432p401r_ccs.obj" \
 "system_msp432p401r.obj" \
 "temp.obj" 
@@ -49,6 +53,7 @@ C_DEPS__QUOTED += \
 "Serial.d" \
 "lcd.d" \
 "promain.d" \
+"speaker.d" \
 "startup_msp432p401r_ccs.d" \
 "system_msp432p401r.d" \
 "temp.d" 
@@ -58,6 +63,7 @@ C_SRCS__QUOTED += \
 "../Serial.c" \
 "../lcd.c" \
 "../promain.c" \
+"../speaker.c" \
 "../startup_msp432p401r_ccs.c" \
 "../system_msp432p401r.c" \
 "../temp.c" 

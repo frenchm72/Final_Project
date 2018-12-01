@@ -9,6 +9,7 @@
 *****************************************************************************/
 #include "msp.h"
 #include "temp.h"
+#include "promain.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -19,6 +20,7 @@
     {
         ADC_PORT -> SEL0 |= ADC_PIN;//set adc conversion
         ADC_PORT -> SEL1 |= ADC_PIN;
+
         LCDADC_PORT -> SEL0 |= LCDADC_PIN;//set adc conversion
         LCDADC_PORT -> SEL1 |= LCDADC_PIN;
 
@@ -32,9 +34,11 @@
         ADC14->CTL0         =    0b10000100001000100000001110010000;
 
         //ADC14 -> CTL1 |= ADC14_CTL1_RES__14BIT;//10 but resolution
-        ADC14->CTL1         =    BIT4|BIT5|BIT(23);         // Bits 5 and 4 = 11 to enable 14 bit conversion
+        ADC14->CTL1         =    BIT4|BIT5;         // Bits 5 and 4 = 11 to enable 14 bit conversion
 
-        ADC14 -> MCTL[ADC_INST] = 0;//defult config for adc
+        ADC14 -> MCTL[0] = ADC_INST;//defult config for adc
+        ADC14->MCTL[1] = LCDADC_INST | BIT7;
+
         ADC14 -> IER0 = 0;//interrupt on
 
         ADC14 -> CTL0 |= ADC14_CTL0_ENC;//enable conversion
@@ -44,7 +48,9 @@
     {
         uint32_t adc_input;
         float TEMP, V_in;
+
         ADC14 -> CTL0 |= ADC14_CTL0_SC; //starts conversion
+
         adc_input = ADC14->MEM[0];
         V_in = ((V_REF * ((adc_input)))/pow(2,14));
         TEMP = ((V_in*1000))/10;//converts to celsius
@@ -54,3 +60,16 @@
                         }
         return TEMP;
     }
+void LCDbrightUpdate(void)
+{
+    uint32_t c_input;
+    float max, V;
+    max = MAXBRIGHT;
+
+    ADC14 -> CTL0 |= ADC14_CTL0_SC; //starts conversion
+
+    c_input = ADC14->MEM[1];
+    V = ((V_REF * ((c_input)))/pow(2,14));
+
+    TIMER_A0 -> CCR[LCDBRIGHT_INST] = max * (V/V_REF);
+}

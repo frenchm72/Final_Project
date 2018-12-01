@@ -4,7 +4,7 @@
   Author(s):   Mathew Yerian-French
   Date:        11/11/2018
   Instructor:  Professor Scott Zuidema
-  Description:
+  Description: Provided By Lecture 226-20 Prof Baroka
   Note:
 *****************************************************************************/
 #include "msp.h"
@@ -56,26 +56,9 @@ void EUSCIA0_IRQHandler(void)
     }
 }
 
-void setupP2()
-{
-    P2->SEL0 |= (BIT4|BIT5|BIT6); //GPIO LED RGB on board
-    P2->SEL1 &= ~(BIT4|BIT5|BIT6);
-    P2->DIR  |=  (BIT4|BIT5|BIT6);
-
-
-    TIMER_A0 -> CCR[0] = 7499;//sets up timer a0
-        TIMER_A0 -> CCR[1] = 0;
-        TIMER_A0 -> CCTL[1] = TIMER_A_CCTLN_OUTMOD_7;
-        TIMER_A0 -> CCR[2] = 0;
-        TIMER_A0 -> CCTL[2] = TIMER_A_CCTLN_OUTMOD_7;
-        TIMER_A0 -> CCR[3] = 0;
-        TIMER_A0 -> CCTL[3] = TIMER_A_CCTLN_OUTMOD_7;//mode 7
-        TIMER_A0 -> CTL = TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC_0
-                | TIMER_A_CTL_MC__UP | TIMER_A_CTL_CLR;
-}
-
 void setupSerial()
 {
+    //one stop bit no parity 9600
     P1->SEL0 |=  (BIT2 | BIT3); // P1.2 and P1.3 are EUSCI_A0 RX
     P1->SEL1 &= ~(BIT2 | BIT3); // and TX respectively.
 

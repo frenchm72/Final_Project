@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./Serial.obj" \
 "./lcd.obj" \
 "./promain.obj" \
+"./speaker.obj" \
 "./startup_msp432p401r_ccs.obj" \
 "./system_msp432p401r.obj" \
 "./temp.obj" \
@@ -160,8 +161,8 @@ FinalProjectF_2020.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Project_Main.obj" "Serial.obj" "lcd.obj" "promain.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" "temp.obj" 
-	-$(RM) "Project_Main.d" "Serial.d" "lcd.d" "promain.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" "temp.d" 
+	-$(RM) "Project_Main.obj" "Serial.obj" "lcd.obj" "promain.obj" "speaker.obj" "startup_msp432p401r_ccs.obj" "system_msp432p401r.obj" "temp.obj" 
+	-$(RM) "Project_Main.d" "Serial.d" "lcd.d" "promain.d" "speaker.d" "startup_msp432p401r_ccs.d" "system_msp432p401r.d" "temp.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

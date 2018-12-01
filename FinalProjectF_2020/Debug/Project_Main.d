@@ -20,6 +20,7 @@ Project_Main.obj: ../LCD.h
 Project_Main.obj: ../serial.h
 Project_Main.obj: ../temp.h
 Project_Main.obj: ../promain.h
+Project_Main.obj: ../speaker.h
 Project_Main.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h
 Project_Main.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h
 Project_Main.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h
@@ -50,6 +51,7 @@ C:/ti/ccs810/ccsv8/ccs_base/arm/include/system_msp432p401r.h:
 ../serial.h: 
 ../temp.h: 
 ../promain.h: 
+../speaker.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h: 

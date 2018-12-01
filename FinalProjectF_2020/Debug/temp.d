@@ -17,6 +17,7 @@ temp.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_compiler.h
 temp.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_ccs.h
 temp.obj: C:/ti/ccs810/ccsv8/ccs_base/arm/include/system_msp432p401r.h
 temp.obj: ../temp.h
+temp.obj: ../promain.h
 temp.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h
 temp.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h
 temp.obj: C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h
@@ -44,6 +45,7 @@ C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_compiler.h:
 C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS/cmsis_ccs.h: 
 C:/ti/ccs810/ccsv8/ccs_base/arm/include/system_msp432p401r.h: 
 ../temp.h: 
+../promain.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/stdio.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/_ti_config.h: 
 C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include/linkage.h: 

@@ -14,8 +14,10 @@
 #define BUTTON_IN   PORT1_IRQHandler    //port handler
 
 #define V_REF 3.3
+
 float getTemp(int degree);
 void convertTemp(float TEMP);
 void ADC14init(void);
+void LCDbrightUpdate(void);
 
 #endif

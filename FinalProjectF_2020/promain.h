@@ -23,6 +23,10 @@
 #define WAKE_PIN BIT4
 #define WAKE_INST 1
 
+#define LCDBRIGHT_PORT P2
+#define LCDBRIGHT_PIN BIT5
+#define LCDBRIGHT_INST 2
+
 #define MAXBRIGHT 7499
 
 #define DEBOUN 100

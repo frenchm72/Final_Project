@@ -9,7 +9,11 @@ char INPUT_BUFFER[BUFFER_SIZE];
 
 void writeOutput(char *string); // write output characters to the serial port
 void readInput(char* string); // read input characters from INPUT_BUFFER that are valid
-void setupP2(); // Sets up P1.0 as an output to drive the on board LED
 void setupSerial(); // Sets up serial for use and enables interrupts
+void checkStr(char *string);
+void convertSerialAlarm(char *string);
+void convertSerialTime(char *string);
+void serialAlarm(void);
+void serialTime(void);
 
 #endif
