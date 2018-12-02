@@ -93,8 +93,8 @@ void main(void)
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;		// stop watchdog timer
 	__disable_irq();
 
-    INPUT_BUFFER[0]= '\0';  // Sets the global buffer to initial condition of empty
-    setupSerial();//sets up serial communication at 9600 8-Bit no parity
+    //INPUT_BUFFER[0]= '\0';  // Sets the global buffer to initial condition of empty
+   // setupSerial();//sets up serial communication at 9600 8-Bit no parity
 	SysTick_Init();                                 //all initializations
 	initPins();
 	ADC14init();
@@ -114,11 +114,11 @@ void main(void)
     state = NORMAL_CLOCK;
     beep();
     comWrit(0x01);//***********************************************************big thing right here and the overall program ill explain later*******************************************************************
-    delay_ms(1);
+    delay_ms(100);
 
 	while (1)
 	{
-	    readInput(string); // Read the input
+//	    readInput(string); // Read the input
 	    checkStr(string);   //checks if the string is valid
         temp = getTemp(degreeFlag); //this is to get the tempature and if the degree flag is 1 it'll be in farhrenheit and if its zero it'll be in celsius
         convertTemp(temp);//this is how you would convert the temp to a string called TempS so we can them print to the screen
