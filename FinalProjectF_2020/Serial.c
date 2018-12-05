@@ -28,18 +28,23 @@ void writeOutput(char *string)
 void readInput(char *string)
 {
     int i = 0;  // Location in the char array "string" that is being written to
-    do
+    if(INPUT_BUFFER[read_location] == '\n')
     {
         // If a new line hasn't been found yet, but we are caught up to what has been received, wait here for new data
-        while(read_location == storage_location && INPUT_BUFFER[read_location] != '\n');
-        string[i] = INPUT_BUFFER[read_location];  // Manual copy of valid character into "string"
-        INPUT_BUFFER[read_location] = '\0';
-        i++; // Increment the location in "string" for next piece of data
-        read_location++; // Increment location in INPUT_BUFFER that has been read
-        if(read_location == BUFFER_SIZE)  // If the end of INPUT_BUFFER has been reached, loop back to 0
-            read_location = 0;
+       // while(read_location == storage_location && INPUT_BUFFER[read_location] != '\n');
+        for(i = 0; read_location < storage_location; i++, read_location = (read_location+1)%BUFFER_SIZE)
+        {
+            string[i] = INPUT_BUFFER[read_location];
+            INPUT_BUFFER[read_location] = '\0';
+        }
+        //string[i] = INPUT_BUFFER[read_location];  // Manual copy of valid character into "string"
+        //INPUT_BUFFER[read_location] = '\0';
+        //i++; // Increment the location in "string" for next piece of data
+        //read_location++; // Increment location in INPUT_BUFFER that has been read
+        //if(read_location == BUFFER_SIZE)  // If the end of INPUT_BUFFER has been reached, loop back to 0
+        //    read_location = 0;
     }
-    while(string[i-1] != '\n'); // If a \n was just read, break out of the while loop
+//    while(string[i-1] != '\n'); // If a \n was just read, break out of the while loop
 
     string[i-1] = '\0'; // Replace the \n with a \0 to end the string when returning this function
 }

@@ -19,7 +19,7 @@
 #include <string.h>
 
 char TempS[TEMPSTR], timeDisp[TIMESTR] = {' ',' ',':',' ',' ',':',' ',' ',},
-     SetTime[8] = {'S','E','T',' ','M','O','D','E',},
+     Snooz[6] = {'S','N','O','O','Z','E',},
      Blink[2] = {' ',' ',},
      On[3] = {' ','O','N',},
      Off[3] = {'O','F','F',},
@@ -87,14 +87,14 @@ void main(void)
 {
     float temp;
     char string[BUFFER_SIZE];
-    alarm.min = 0;
+    alarm.min = 3;
     alarm.hour = 1;
 
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;		// stop watchdog timer
 	__disable_irq();
 
-    //INPUT_BUFFER[0]= '\0';  // Sets the global buffer to initial condition of empty
-   // setupSerial();//sets up serial communication at 9600 8-Bit no parity
+    INPUT_BUFFER[0]= '\0';  // Sets the global buffer to initial condition of empty
+    setupSerial();//sets up serial communication at 9600 8-Bit no parity
 	SysTick_Init();                                 //all initializations
 	initPins();
 	ADC14init();
@@ -103,7 +103,7 @@ void main(void)
 	NVIC -> ISER[0] |= 1 << ADC14_IRQn;            //adc temp interrupt
     NVIC -> ISER[1] |= 1 <<((PORT1_IRQn)&31); //enable port 1 interrupts
     NVIC_EnableIRQ(RTC_C_IRQn);
-	
+
 	__enable_irq();                       	//Enable all interrupts for MSP432
 
     delay_ms(100);//so we dont have problems with LCD
@@ -118,7 +118,7 @@ void main(void)
 
 	while (1)
 	{
-//	    readInput(string); // Read the input
+	    readInput(string); // Read the input
 	    checkStr(string);   //checks if the string is valid
         temp = getTemp(degreeFlag); //this is to get the tempature and if the degree flag is 1 it'll be in farhrenheit and if its zero it'll be in celsius
         convertTemp(temp);//this is how you would convert the temp to a string called TempS so we can them print to the screen
@@ -177,6 +177,24 @@ if(validFlag)
                         {
                             dataWrit(On[i]);
                         }
+                        }
+            if(snoozFlag)
+            {
+                comWrit(0xC0);
+                delay_ms(1);
+                for(i=0;i<6;i++)
+                {
+                    dataWrit(Snooz[i]);
+                }
+            }
+            if(!snoozFlag)
+                        {
+                            comWrit(0xC0);
+                            delay_ms(1);
+                            for(i=0;i<6;i++)
+                            {
+                                dataWrit(' ');
+                            }
                         }
             comWrit(0xCA);
             delay_ms(1);
@@ -435,21 +453,49 @@ if(validFlag)
             }
             break;
 
+
+            //default for normal clock incase it gets lost
         default:
             state = NORMAL_CLOCK;
             break;
 	    }//end of switch
-	    if((alarmFlag == 1) && ((alarm.min - now.min)<=5) && (alarm.hour == now.hour) && ((alarm.min - now.min)>0))
+
+
+	    //these two if statements should be the same to basicly increase brightness for the wake
+	    //up leds one is for the approche sleep and the other is for the approche on the alarm
+	    if((alarmFlag == 1) && ((alarm.min - now.min)<=5) && ((alarm.hour == now.hour)||((alarm.min < 5)&&((alarm.hour-1) == now.hour))) && ((alarm.min - now.min)>0))
 	    {
 	        counter++;
 	        if(counter==3)
 	        {
 	            counter = 0;
-	            bright = bright + (MaxBright * .005);
+	            bright = bright + (MaxBright * .01);
 	            TIMER_A0 -> CCR[WAKE_INST] = bright;
-	            // <--- set this equal to duty cycle add 5% brigntness to led for 5 mins before alarm for every 3 seconds
+	            // <--- set this equal to duty cycle add 1% brigntness to led for 5 mins before alarm for every 3 seconds
 	        }
 	    }
+        if((snoozFlag == 1) && ((snooz.min - now.min)<=5) && ((snooz.hour == now.hour)||((snooz.min < 5)&&((snooz.hour-1) == now.hour))) && ((snooz.min - now.min)>0))
+        {
+            counter++;
+            if(counter==3)
+            {
+                counter = 0;
+                bright = bright + (MaxBright * .01);
+                TIMER_A0 -> CCR[WAKE_INST] = bright;
+                // <--- set this equal to duty cycle add 1% brigntness to led for 5 mins before alarm for every 3 seconds
+            }
+        }
+
+
+
+        //these set the alarm off as when it is in sleep or the alarm setting
+        if((alarm.hour == now.hour) && (alarm.min == now.sec) && (MinSecFlag == 1))
+               {
+                   RTC_C -> TIM0 = now.sec<<8;
+                   state = ALARM_GOING_OFF;
+                   alarmGoFlag = 1;
+                   MinSecFlag = 0;
+               }
 	    if((alarm.hour == now.hour) && (alarm.min == now.min) && (alarmFlag == 1) && (0 == now.sec))
 	    {
 	        state = ALARM_GOING_OFF;
@@ -460,11 +506,14 @@ if(validFlag)
             state = ALARM_GOING_OFF;
 	        snoozFlag = 0;
 	    }
-	    if(MinSecFlag)
+
+
+//this basically makes the value of the min to 59 so when seconds == 59 itll incress the hours
+	    if((now.min!=59)&&(MinSecFlag == 1))
 	        {
-	            RTC_C -> TIM0 = (now.sec)>>8;
+	        RTC_C -> TIM0 = 59<<8;
 	        }
-	    RTCFlag = 0;//do not move
+	    RTCFlag = 0;//do not move this is to alow the LCD refresh and increment the RTC
 	        }//End of if second statement
 	}//end of while loop
 
@@ -523,6 +572,8 @@ if((now.hour > 12)&&(now.hour<22))
     timeDisp[1] = ((now.hour-12)%10)+48;
     AmPmFlag = 1;
 }
+if(MinSecFlag == 0)
+{
 if(now.min < 10)
 {
     timeDisp[3] = '0';
@@ -542,6 +593,22 @@ if(now.sec >= 10)
 {
     timeDisp[6] = ((now.sec/10)%10)+48;
     timeDisp[7] = (now.sec%10)+48;
+}
+}
+if(MinSecFlag == 1)
+{
+if(now.sec < 10)
+{
+    timeDisp[3] = '0';
+    timeDisp[4] = (now.sec+48);
+}
+if(now.sec >= 10)
+{
+    timeDisp[3] = ((now.sec/10)%10)+48;
+    timeDisp[4] = (now.sec%10)+48;
+}
+timeDisp[6] = '0';
+timeDisp[7] = '0';
 }
 if(AmPmFlag == 0)
 {
@@ -600,14 +667,17 @@ void BUTTON_IN(void)                                                            
 
     if(!(MINSEC_PORT -> IN & MINSEC_PIN) && (MinSecFlag == 0))
     {
-        delay_ms(DEBOUN);                                                                                                              //delay for debounce
+        delay_ms(DEBOUN);
+        RTC_C -> TIM0 = now.min;
         while(!(MINSEC_PORT -> IN & MINSEC_PIN)){}
+        RTC_C -> TIM0 = now.min;
         MinSecFlag = 1;
     }
     if(!(MINSEC_PORT -> IN & MINSEC_PIN) && (MinSecFlag == 1))
         {
             delay_ms(DEBOUN);                                                                                                              //delay for debounce
             while(!(MINSEC_PORT -> IN & MINSEC_PIN)){}
+            RTC_C -> TIM0 = now.sec<<8;
             MinSecFlag = 0;
         }
 
@@ -623,6 +693,7 @@ void BUTTON_IN(void)                                                            
            {
              set.hour = 23;
            }
+           MinSecFlag = 0;
 
        }
        if(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN) && (state == TIME_SET_HOUR))
@@ -635,6 +706,7 @@ void BUTTON_IN(void)                                                            
                       {
                           set.hour = 0;
                       }
+           MinSecFlag = 0;
        }
        if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == TIME_SET_MIN))
        {
@@ -651,6 +723,7 @@ void BUTTON_IN(void)                                                            
                }
                set.min = 59;
            }
+           MinSecFlag = 0;
        }
        if(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN) && (state == TIME_SET_MIN))
        {
@@ -667,6 +740,7 @@ void BUTTON_IN(void)                                                            
                }
                set.min = 0;
            }
+           MinSecFlag = 0;
        }
        if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == TIME_SET_SEC))
        {
@@ -688,6 +762,7 @@ void BUTTON_IN(void)                                                            
                           }
                           set.sec = 59;
                       }
+                      MinSecFlag = 0;
        }
        if(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN) && (state == TIME_SET_SEC))
        {
@@ -709,6 +784,7 @@ void BUTTON_IN(void)                                                            
                           }
                           set.sec = 0;
                       }
+                      MinSecFlag = 0;
        }
 
         if(!(SET_PORT -> IN & SET_PIN) && (state == TIME_SET_HOUR))
@@ -747,6 +823,7 @@ void BUTTON_IN(void)                                                            
                 set.hour = now.hour;
                 set.min = now.min;
                 set.sec = now.sec;
+                MinSecFlag = 0;
             }
     if(!(SETALARM_PORT -> IN & SETALARM_PIN))
                 {
@@ -754,12 +831,14 @@ void BUTTON_IN(void)                                                            
                 while(!(SETALARM_PORT -> IN & SETALARM_PIN)){}                                                                                  //if button is being held
                     setAlarmFlag = 1;
                     state = ALARM_HOUR;
+                    MinSecFlag = 0;
                 }
     if((alarmFlag == 0) && (!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)))
     {
         delay_ms(DEBOUN);                                                                                                              //delay for debounce
         while(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)){}                                                                                  //if button is being held
         alarmFlag = 1;
+        MinSecFlag = 0;
         //bright = MAXBRIGHT * .05;
     }
     if((alarmFlag == 1) && (!(ONOFFUP_PORT -> IN & ONOFFUP_PIN)))
@@ -773,6 +852,7 @@ void BUTTON_IN(void)                                                            
             bright = 0;//*********************************************************************set the led to 0 brightness
             snoozFlag = 0;
             TIMER_A0 -> CCR[WAKE_INST] = bright;
+            MinSecFlag = 0;
         }
     }
 
@@ -789,7 +869,7 @@ void BUTTON_IN(void)                                                            
               {
                   alarm.hour = 23;
               }
-
+              MinSecFlag = 0;
           }
           if(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN) && (state == ALARM_HOUR))
           {
@@ -801,6 +881,7 @@ void BUTTON_IN(void)                                                            
                          {
                   alarm.hour = 0;
                          }
+              MinSecFlag = 0;
           }
           if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == ALARM_MIN))
           {
@@ -817,6 +898,7 @@ void BUTTON_IN(void)                                                            
                   }
                   alarm.min = 59;
               }
+              MinSecFlag = 0;
           }
           if(!(ONOFFUP_PORT -> IN & ONOFFUP_PIN) && (state == ALARM_MIN))
           {
@@ -833,6 +915,7 @@ void BUTTON_IN(void)                                                            
                   }
                   alarm.min = 0;
               }
+              MinSecFlag = 0;
           }
         /*  if(!(SDOWN_PORT -> IN & SDOWN_PIN) && (state == ALARM_SEC))
           {
@@ -892,6 +975,7 @@ void BUTTON_IN(void)                                                            
                    setAlarmFlag = 0;
                    convertTime();
                    timeDisp[5] = ':';
+                   MinSecFlag = 0;
                    }
           /* if(!(SETALARM_PORT -> IN & SETALARM_PIN) && (state == ALARM_SEC))
                    {
@@ -914,6 +998,7 @@ void BUTTON_IN(void)                                                            
                 snoozFlag = 0;
                 state = NORMAL_CLOCK;
                 TIMER_A0 -> CCR[WAKE_INST] = bright;
+                MinSecFlag = 0;
             }
     if((alarmFlag == 1) && !(SDOWN_PORT -> IN & SDOWN_PIN) && (snoozFlag == 0))
     {
@@ -921,18 +1006,23 @@ void BUTTON_IN(void)                                                            
         snooz.hour = now.hour;
         state = NORMAL_CLOCK;
         snoozFlag = 1;
+        bright = 0;
+        TIMER_A0 -> CCR[WAKE_INST] = bright;
+        MinSecFlag = 0;
     }
     if(!(BUTTON_PORT -> IN & BUTTON_PIN) && (degreeFlag == 0))
         {
             delay_ms(DEBOUN);                                                                                                              //delay for debounce
             while(!(BUTTON_PORT -> IN & BUTTON_PIN)){}
             degreeFlag = 1;
+            MinSecFlag = 0;
         }
         if(!(BUTTON_PORT -> IN & BUTTON_PIN) && (degreeFlag == 1))
             {
                 delay_ms(DEBOUN);                                                                                                              //delay for debounce
                 while(!(BUTTON_PORT -> IN & BUTTON_PIN)){}
                 degreeFlag = 0;
+                MinSecFlag = 0;
             }
    SET_PORT -> IFG &= ~SET_PIN;//turns flag to 0
    SDOWN_PORT -> IFG &= ~SDOWN_PIN;

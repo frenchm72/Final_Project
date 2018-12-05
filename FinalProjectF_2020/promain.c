@@ -175,8 +175,8 @@ void delay_ms(unsigned ms)//delay in milliseconds using systick
 }
 void configRTC(void)
 {
-    RTC_C -> CTL0 = 0xA510;
-    RTC_C -> CTL13 = 0x0000;
-    RTC_C -> TIM0 = 59<<8 | 55;
+    RTC_C -> CTL0 = 0xA510;//password
+    RTC_C -> CTL13 = 0x0000;//no other set up
+    RTC_C -> TIM0 = 57<<8 | 55;
     RTC_C -> TIM1 = 5<<8 | 00;
 }
