@@ -12,13 +12,6 @@ Project_Main.obj: ../Project_Main.c $(GEN_OPTS) | $(GEN_HDRS)
 	@echo 'Finished building: "$<"'
 	@echo ' '
 
-Serial.obj: ../Serial.c $(GEN_OPTS) | $(GEN_HDRS)
-	@echo 'Building file: "$<"'
-	@echo 'Invoking: ARM Compiler'
-	"C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --include_path="C:/ti/ccs810/ccsv8/ccs_base/arm/include" --include_path="C:/ti/ccs810/ccsv8/ccs_base/arm/include/CMSIS" --include_path="C:/Users/Mathew Yerian-French/git/Final_Project/FinalProjectF_2020" --include_path="C:/ti/ccs810/ccsv8/tools/compiler/ti-cgt-arm_18.1.3.LTS/include" --advice:power=all --define=__MSP432P401R__ --define=ccs -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi --preproc_with_compile --preproc_dependency="Serial.d_raw" $(GEN_OPTS__FLAG) "$<"
-	@echo 'Finished building: "$<"'
-	@echo ' '
-
 lcd.obj: ../lcd.c $(GEN_OPTS) | $(GEN_HDRS)
 	@echo 'Building file: "$<"'
 	@echo 'Invoking: ARM Compiler'
