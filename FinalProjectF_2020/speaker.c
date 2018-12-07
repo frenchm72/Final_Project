@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "msp.h"
 #include "LCD.h"
 #include "serial.h"
@@ -19,4 +20,15 @@ void beep(void)//PULSES THE PIN TO MAKE A BEEP NOISE
     delay_ms(SMALL_PAUSE);
     BEEP_PORT->OUT &=~ BEEP_PIN;
     //delay_ms(BIG_PAUSE);
+=======
+void beep(void){
+    BEEP_PORT->OUT |= BEEP_PIN;
+    delay_ms(SMALL_PAUSE);
+    BEEP_PORT->OUT &=~ BEEP_PIN;
+    delay_ms(SMALL_PAUSE);
+    BEEP_PORT->OUT |= BEEP_PIN;
+    delay_ms(SMALL_PAUSE);
+    BEEP_PORT->OUT &=~ BEEP_PIN;
+    delay_ms(BIG_PAUSE);
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
 }

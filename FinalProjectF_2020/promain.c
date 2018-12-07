@@ -28,6 +28,13 @@ void initPins(void)
     PULSE_PORT->DIR |= PULSE_PIN;
     PULSE_PORT->OUT |= PULSE_PIN;
 
+    BEEP_PORT->SEL0 &= ~BEEP_PIN;                  //setting up beep pin
+    BEEP_PORT->SEL1 &= ~BEEP_PIN;
+    BEEP_PORT->DIR |= BEEP_PIN;
+    BEEP_PORT->OUT &=~ BEEP_PIN;
+
+
+
     RS_PORT->SEL0 &= ~RS_PIN;                  //setting up RS pin
     RS_PORT->SEL1 &= ~RS_PIN;
     RS_PORT->DIR |= RS_PIN;
@@ -47,6 +54,7 @@ void initPins(void)
     WAKE_PORT->DIR  |=  (WAKE_PIN);
     WAKE_PORT->OUT |= WAKE_PIN;
 
+<<<<<<< HEAD
     LCDBRIGHT_PORT->SEL0 |= (LCDBRIGHT_PIN); //GPIO LCD
     LCDBRIGHT_PORT->SEL1 &= ~(LCDBRIGHT_PIN);
     LCDBRIGHT_PORT->DIR  |=  (LCDBRIGHT_PIN);
@@ -58,6 +66,14 @@ void initPins(void)
     BEEP_PORT->OUT |= BEEP_PIN;
 
     /*  BUTTON_PORT -> SEL0 &= ~BUTTON_PIN;//PIN INTERRUPT SET UP
+=======
+    BEEP_PORT->SEL0 |= (BEEP_PIN); //GPIO BEEP
+    BEEP_PORT->SEL1 &= ~(BEEP_PIN);
+    BEEP_PORT->DIR  |=  (BEEP_PIN);
+    BEEP_PORT->OUT &=~ BEEP_PIN;
+
+    /*  BUTTON_PORT -> SEL0 &= ~BUTTON_PIN;
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
     BUTTON_PORT -> SEL1 &= ~BUTTON_PIN;
     BUTTON_PORT -> DIR  |=  BUTTON_PIN;
     BUTTON_PORT -> REN  |=  BUTTON_PIN;
@@ -149,10 +165,20 @@ void initPins(void)
     TIMER_A0 -> CTL = TIMER_A_CTL_TASSEL_2 | TIMER_A_CTL_MC_0
                     | TIMER_A_CTL_MC__UP | TIMER_A_CTL_CLR;
 
+<<<<<<< HEAD
     TIMER_A2->CCR[0] = 600+0x00000860>>2;
     TIMER_A2->CCR[BEEP_INST] = TIMER_A2->CCR[0]>>1;
     TIMER_A2->CCTL[BEEP_INST] = 0b11100000;                // Set to Reset/set Compare Mode (BITs 7-5 set to 1)
     TIMER_A2->CTL = 0b1000010100;              // Bits 9-8 = 10 to Set to SMCLK
+=======
+    TIMER_A1->CCR[0]    =    600+0x00000860>>2;
+    TIMER_A1->CCR[BEEP_INST]    =    TIMER_A0->CCR[0]>>1
+    TIMER_A1->CCTL[BEEP_INST]   =    0b11100000;                // Set to Reset/set Compare Mode (BITs 7-5 set to 1)
+    TIMER_A1->CTL       =    0b1000010100;              // Bits 9-8 = 10 to Set to SMCLK
+                                                        // Bits 5-4 = 01 to Set to Count Up Mode
+
+
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
 }
 
 

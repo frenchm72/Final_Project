@@ -37,6 +37,7 @@ void convertTime(void);
 void convertTimeSet(void);
 void convertAlarmSet(void);
 
+
 void initPins(void);
 
 void delay_micro(unsigned mic);

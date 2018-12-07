@@ -1,10 +1,18 @@
 /****************************************************************************
+<<<<<<< HEAD
   Title:       EGR 226-908 Final Project
   Filename:    Project_Main.c
   Author(s):   Mathew Yerian-French & Malcolm Macdonald
   Date:        11/11/2018 - 12/05/2018
+=======
+  Title:       EGR 226 Lab 7
+  Filename:    Lab_7_Lab_Part_
+  Author(s):   Mathew Yerian-French & Malcolm Macdonald
+  Date:        11/11/2018
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
   Instructor:  Professor Scott Zuidema
   Description:
+<<<<<<< HEAD
   Note:           There are info descriptions on what is going on in places
                however not every line is commented like the last project.
                There are multiple codes in here that were used from lecture
@@ -13,6 +21,9 @@
                best as possible
                   Also there are commented out code that is left in to refer to
                Mistakes for some of the conclusions in the report
+=======
+  Note:         12g start pin for LCD
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
 *****************************************************************************/
 
 //ALL HEADER FILES USED TO MAKE THIS PROGRAM
@@ -555,6 +566,7 @@ if(validFlag)                                                                   
 	    }
 	    if((alarmGoFlag == 0)&&(alarmFlag == 1) && (((alarm.hour*60)+alarm.min < 5))&&((alarm.min + ((23*60)+55))<= ((now.hour*60)+now.min)))
 	    {
+<<<<<<< HEAD
 	        counter++;
 	                    if(counter==3)
 	                    {
@@ -623,11 +635,18 @@ if(validFlag)                                                                   
 	    if((alarm.hour == now.hour) && (alarm.min == now.min) && (alarmFlag == 1) && (0 == now.sec))
 	    {
 	        state = ALARM_GOING_OFF;
+=======
+	        beep();
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
 	        alarmGoFlag = 1;
 	    }
 	    if((snooz.hour == now.hour) && (snooz.min == now.min) && (snoozFlag == 1) && (0 == now.sec) && (alarmFlag == 1))
 	    {
+<<<<<<< HEAD
             state = ALARM_GOING_OFF;
+=======
+	        beep();
+>>>>>>> branch 'master' of https://github.com/frenchm72/Final_Project.git
 	        snoozFlag = 0;
 	    }
 
