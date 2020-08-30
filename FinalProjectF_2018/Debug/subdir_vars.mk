@@ -11,7 +11,6 @@ CMD_SRCS += \
 C_SRCS += \
 ../Project_Main.c \
 ../Serial.c \
-../lcd.c \
 ../promain.c \
 ../startup_msp432p401r_ccs.c \
 ../system_msp432p401r.c \
@@ -20,7 +19,6 @@ C_SRCS += \
 C_DEPS += \
 ./Project_Main.d \
 ./Serial.d \
-./lcd.d \
 ./promain.d \
 ./startup_msp432p401r_ccs.d \
 ./system_msp432p401r.d \
@@ -29,7 +27,6 @@ C_DEPS += \
 OBJS += \
 ./Project_Main.obj \
 ./Serial.obj \
-./lcd.obj \
 ./promain.obj \
 ./startup_msp432p401r_ccs.obj \
 ./system_msp432p401r.obj \
@@ -38,7 +35,6 @@ OBJS += \
 OBJS__QUOTED += \
 "Project_Main.obj" \
 "Serial.obj" \
-"lcd.obj" \
 "promain.obj" \
 "startup_msp432p401r_ccs.obj" \
 "system_msp432p401r.obj" \
@@ -47,7 +43,6 @@ OBJS__QUOTED += \
 C_DEPS__QUOTED += \
 "Project_Main.d" \
 "Serial.d" \
-"lcd.d" \
 "promain.d" \
 "startup_msp432p401r_ccs.d" \
 "system_msp432p401r.d" \
@@ -56,7 +51,6 @@ C_DEPS__QUOTED += \
 C_SRCS__QUOTED += \
 "../Project_Main.c" \
 "../Serial.c" \
-"../lcd.c" \
 "../promain.c" \
 "../startup_msp432p401r_ccs.c" \
 "../system_msp432p401r.c" \
